@@ -3,9 +3,11 @@ package com.example.notarobot
 import android.content.Context
 import android.media.Image
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +21,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.notarobot.ui.theme.NotARobotTheme
+import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,9 +66,9 @@ fun DogCatList(){
     val allImages = (dogImages + catImages.random()).shuffled()
 
     LazyColumn(
-         modifier = Modifier
-             .fillMaxSize()
-             .padding(horizontal = 16.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ){
         // Add the text "Find the cat!" at the top
@@ -76,7 +84,7 @@ fun DogCatList(){
         }
         // Then add all the 7 images
         items(items = allImages) {
-            imageName -> DogCatItem(imageName = imageName)
+                imageName -> DogCatItem(imageName = imageName)
         }
     }
 }
@@ -85,6 +93,7 @@ fun DogCatList(){
 fun DogCatItem(imageName: String) {
     val context = LocalContext.current
     val resourceId = painterResource(id = getDrawableResourceId(context, imageName))
+    val selectedImage = remember { mutableStateOf("") }
 
     Box(
         modifier = Modifier
@@ -96,7 +105,11 @@ fun DogCatItem(imageName: String) {
             painter = resourceId,
             contentDescription = null,
             modifier = Modifier
-                .height(200.dp),
+                .height(200.dp)
+                .clickable {
+                    // Handle the click event
+                    // onImageClicked(imageName, selectedImage)
+                },
             contentScale = ContentScale.Crop
         )
     }
@@ -106,7 +119,21 @@ fun getDrawableResourceId(context: Context, imageName: String): Int {
     return context.resources.getIdentifier(imageName, "drawable", context.packageName)
 }
 
-
+@Composable
+fun onImageClicked(imageName: String, selectedImage: MutableState<String>) {
+    if (imageName.startsWith("cat")) {
+        selectedImage.value = "cat"
+        ToastMessage("Hurray, you are not a robot!")
+    } else if (imageName.startsWith("dog")) {
+        selectedImage.value = "dog"
+        ToastMessage("Oops, that's not a cat!")
+    }
+}
+@Composable
+fun ToastMessage(message: String) {
+    // Display the toast after a delay to avoid Compose's restriction
+    Toast.makeText(LocalContext.current, message, Toast.LENGTH_LONG).show()
+}
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
