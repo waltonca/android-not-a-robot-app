@@ -108,7 +108,15 @@ fun DogCatItem(imageName: String) {
                 .height(200.dp)
                 .clickable {
                     // Handle the click event
+                    // Toast.makeText(context, "xxx", Toast.LENGTH_LONG).show()
                     // onImageClicked(imageName, selectedImage)
+                    if (imageName.startsWith("cat")) {
+                        selectedImage.value = "cat"
+                        Toast.makeText(context, "Hurray, you are not a robot!", Toast.LENGTH_LONG).show()
+                    } else if (imageName.startsWith("dog")) {
+                        selectedImage.value = "dog"
+                        Toast.makeText(context, "Opps, that’s not a cat!", Toast.LENGTH_LONG).show()
+                    }
                 },
             contentScale = ContentScale.Crop
         )
@@ -117,22 +125,6 @@ fun DogCatItem(imageName: String) {
 
 fun getDrawableResourceId(context: Context, imageName: String): Int {
     return context.resources.getIdentifier(imageName, "drawable", context.packageName)
-}
-
-@Composable
-fun onImageClicked(imageName: String, selectedImage: MutableState<String>) {
-    if (imageName.startsWith("cat")) {
-        selectedImage.value = "cat"
-        ToastMessage("Hurray, you are not a robot!")
-    } else if (imageName.startsWith("dog")) {
-        selectedImage.value = "dog"
-        ToastMessage("Oops, that's not a cat!")
-    }
-}
-@Composable
-fun ToastMessage(message: String) {
-    // Display the toast after a delay to avoid Compose's restriction
-    Toast.makeText(LocalContext.current, message, Toast.LENGTH_LONG).show()
 }
 @Preview(showBackground = true)
 @Composable
